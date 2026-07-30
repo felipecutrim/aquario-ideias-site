@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { startups } from '../data/startups'
+import { fetchStartups } from '../data/startups'
+import { useSupabaseData } from '../hooks/useSupabaseData'
+import DataStatus from '../components/DataStatus'
 
 const badgeStyles = {
   Feita: 'bg-secondary-light text-primary',
@@ -7,7 +9,7 @@ const badgeStyles = {
   '—': 'bg-neutral-100 text-neutral-400',
 }
 
-function uniqueValues(key) {
+function uniqueValues(startups, key) {
   return Array.from(
     new Set(
       startups.map((startup) => startup[key]).filter((value) => value !== '—'),
@@ -30,14 +32,20 @@ function display(value) {
 }
 
 export default function Startups() {
+  const { data, error, loading } = useSupabaseData(fetchStartups)
+  const startups = data ?? []
+
   const [search, setSearch] = useState('')
   const [srl, setSrl] = useState('')
   const [categoria, setCategoria] = useState('')
   const [setor, setSetor] = useState('')
 
-  const srlOptions = useMemo(() => uniqueValues('srl'), [])
-  const categoriaOptions = useMemo(() => uniqueValues('categoria'), [])
-  const setorOptions = useMemo(() => uniqueValues('setor'), [])
+  const srlOptions = useMemo(() => uniqueValues(startups, 'srl'), [startups])
+  const categoriaOptions = useMemo(
+    () => uniqueValues(startups, 'categoria'),
+    [startups],
+  )
+  const setorOptions = useMemo(() => uniqueValues(startups, 'setor'), [startups])
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -51,7 +59,7 @@ export default function Startups() {
       const matchesSetor = !setor || startup.setor === setor
       return matchesSearch && matchesSrl && matchesCategoria && matchesSetor
     })
-  }, [search, srl, categoria, setor])
+  }, [startups, search, srl, categoria, setor])
 
   return (
     <section>
@@ -106,11 +114,15 @@ export default function Startups() {
         </select>
       </div>
 
-      {filtered.length === 0 ? (
+      <DataStatus loading={loading} error={error} />
+
+      {!loading && !error && filtered.length === 0 && (
         <p className="mt-6 rounded-xl border border-secondary-light bg-white px-4 py-6 text-center text-neutral-400">
           Nenhuma startup encontrada para os filtros selecionados.
         </p>
-      ) : (
+      )}
+
+      {!loading && !error && filtered.length > 0 && (
         <>
           <div className="mt-6 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
             <table className="w-full text-left text-sm">

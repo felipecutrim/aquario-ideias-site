@@ -1,4 +1,6 @@
-import { mentores } from '../data/mentores'
+import { fetchMentores } from '../data/mentores'
+import { useSupabaseData } from '../hooks/useSupabaseData'
+import DataStatus from '../components/DataStatus'
 
 const modalidadeStyles = {
   Remunerado: 'bg-accent-blue/10 text-accent-blue',
@@ -6,6 +8,9 @@ const modalidadeStyles = {
 }
 
 export default function Mentores() {
+  const { data, error, loading } = useSupabaseData(fetchMentores)
+  const mentores = data ?? []
+
   return (
     <section>
       <h1 className="text-3xl font-bold text-primary">Mentores</h1>
@@ -13,24 +18,28 @@ export default function Mentores() {
         Especialistas que orientam as startups incubadas.
       </p>
 
-      <ul className="mt-8 divide-y divide-secondary-light rounded-xl border border-secondary-light bg-white">
-        {mentores.map((mentor) => (
-          <li
-            key={mentor.nome}
-            className="flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <p className="font-semibold text-neutral-900">{mentor.nome}</p>
-              <p className="text-sm text-neutral-500">{mentor.area}</p>
-            </div>
-            <span
-              className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-medium ${modalidadeStyles[mentor.modalidade]}`}
+      <DataStatus loading={loading} error={error} />
+
+      {!loading && !error && (
+        <ul className="mt-8 divide-y divide-secondary-light rounded-xl border border-secondary-light bg-white">
+          {mentores.map((mentor) => (
+            <li
+              key={mentor.nome}
+              className="flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
-              {mentor.modalidade}
-            </span>
-          </li>
-        ))}
-      </ul>
+              <div>
+                <p className="font-semibold text-neutral-900">{mentor.nome}</p>
+                <p className="text-sm text-neutral-500">{mentor.area}</p>
+              </div>
+              <span
+                className={`w-fit shrink-0 rounded-full px-3 py-1 text-xs font-medium ${modalidadeStyles[mentor.modalidade]}`}
+              >
+                {mentor.modalidade}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   )
 }

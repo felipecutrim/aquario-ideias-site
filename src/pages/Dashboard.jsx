@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -7,40 +8,46 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { startups, countStartupsByCategoria } from '../data/startups'
-import { mentores } from '../data/mentores'
+import { fetchStartups, countStartupsByCategoria } from '../data/startups'
+import { fetchMentores } from '../data/mentores'
 import {
-  mentorias,
+  fetchMentorias,
   countMentoriasByArea,
   countMentoriasByStartup,
   countMentoriasPorMes,
   countMentoriasByMentor,
 } from '../data/mentorias'
-
-const startupsByCategoria = countStartupsByCategoria()
-const mentoriasByArea = countMentoriasByArea()
-const mentoriasByStartup = countMentoriasByStartup()
-const mentoriasPorMes = countMentoriasPorMes()
-const mentoresRanking = countMentoriasByMentor()
-const maxMentoriasPorMentor = Math.max(
-  ...mentoresRanking.map((item) => item.quantidade),
-  1,
-)
-
-const stats = [
-  { label: 'Startups incubadas', value: startups.length },
-  { label: 'Mentores ativos', value: mentores.length },
-  {
-    label: 'Mentorias agendadas',
-    value: mentorias.filter((m) => m.status === 'Agendada').length,
-  },
-  {
-    label: 'Mentorias concluídas',
-    value: mentorias.filter((m) => m.status === 'Concluída').length,
-  },
-]
+import DataStatus from '../components/DataStatus'
 
 export default function Dashboard() {
+  const [startups, setStartups] = useState(null)
+  const [mentores, setMentores] = useState(null)
+  const [mentorias, setMentorias] = useState(null)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+
+    Promise.all([fetchStartups(), fetchMentores(), fetchMentorias()])
+      .then(([startupsData, mentoresData, mentoriasData]) => {
+        if (!isMounted) return
+        setStartups(startupsData)
+        setMentores(mentoresData)
+        setMentorias(mentoriasData)
+      })
+      .catch((err) => {
+        if (isMounted) setError(err)
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <section>
       <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
@@ -48,6 +55,45 @@ export default function Dashboard() {
         Visão geral do Aquário de Ideias, a incubadora de empresas da UNESP.
       </p>
 
+      <DataStatus loading={loading} error={error} />
+
+      {!loading && !error && (
+        <DashboardContent
+          startups={startups}
+          mentores={mentores}
+          mentorias={mentorias}
+        />
+      )}
+    </section>
+  )
+}
+
+function DashboardContent({ startups, mentores, mentorias }) {
+  const startupsByCategoria = countStartupsByCategoria(startups)
+  const mentoriasByArea = countMentoriasByArea(mentorias)
+  const mentoriasByStartup = countMentoriasByStartup(mentorias)
+  const mentoriasPorMes = countMentoriasPorMes(mentorias)
+  const mentoresRanking = countMentoriasByMentor(mentorias)
+  const maxMentoriasPorMentor = Math.max(
+    ...mentoresRanking.map((item) => item.quantidade),
+    1,
+  )
+
+  const stats = [
+    { label: 'Startups incubadas', value: startups.length },
+    { label: 'Mentores ativos', value: mentores.length },
+    {
+      label: 'Mentorias agendadas',
+      value: mentorias.filter((m) => m.status === 'Agendada').length,
+    },
+    {
+      label: 'Mentorias concluídas',
+      value: mentorias.filter((m) => m.status === 'Concluída').length,
+    },
+  ]
+
+  return (
+    <>
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <div
@@ -181,10 +227,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={mentoriasPorMes}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4f3ea" />
-                <XAxis
-                  dataKey="mes"
-                  tick={{ fontSize: 12, fill: '#525252' }}
-                />
+                <XAxis dataKey="mes" tick={{ fontSize: 12, fill: '#525252' }} />
                 <YAxis
                   allowDecimals={false}
                   tick={{ fontSize: 12, fill: '#525252' }}
@@ -243,6 +286,6 @@ export default function Dashboard() {
           infraestrutura e conexão com o ecossistema de inovação.
         </p>
       </div>
-    </section>
+    </>
   )
 }

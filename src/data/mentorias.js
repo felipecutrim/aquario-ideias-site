@@ -1,105 +1,30 @@
-export const mentorias = [
-  {
-    id: 'M01',
-    startup: 'Pluralgae',
-    responsavelStartup: 'Mariana Fortes',
-    area: 'Editais de Fomento',
-    mentor: 'Elisa Maia de Godoy',
-    dataSolicitacao: '',
-    status: 'Concluída',
-    dataAgendamento: '',
-    dataMentoria: '01/07',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M02',
-    startup: 'Explores do Porquê Educação Científica',
-    responsavelStartup: 'Sara Nállia',
-    area: 'Contábil',
-    mentor: 'Kaio Guilherme de Oliveira Gallo',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '04/05',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M03',
-    startup: 'AZB Environment Sampling',
-    responsavelStartup: 'André Zuffo Buoratti',
-    area: 'Jurídico',
-    mentor: 'Antony Jefferson',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '16/06',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M04',
-    startup: 'Nexus Cidadão',
-    responsavelStartup: 'Yuri Leite',
-    area: 'Marketing e Vendas',
-    mentor: 'Victor Yagyu',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '18/06',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M05',
-    startup: 'FWS Consultoria',
-    responsavelStartup: 'Daniel Santiago Rucinque',
-    area: 'Jurídico',
-    mentor: 'Juliana Duarte Vieira Amaral',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '22/06',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M06',
-    startup: 'FWS Consultoria',
-    responsavelStartup: 'Daniel Santiago Rucinque',
-    area: 'Finanças',
-    mentor: 'Felipe Andre Junqueira',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '22/06',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-  {
-    id: 'M07',
-    startup: 'FWS Consultoria',
-    responsavelStartup: 'Daniel Santiago Rucinque',
-    area: 'Processos',
-    mentor: 'Tavani Rocha Camargo',
-    dataSolicitacao: '',
-    status: 'Agendada',
-    dataAgendamento: '',
-    dataMentoria: '22/06',
-    relatorioRecebido: '',
-    pagamentoMentor: '',
-    observacoes: '',
-  },
-]
+import { supabase } from '../lib/supabaseClient'
 
-export function countMentoriasByArea(list = mentorias) {
+export async function fetchMentorias() {
+  const { data, error } = await supabase
+    .from('mentorias')
+    .select('*')
+    .order('id')
+
+  if (error) throw error
+
+  return data.map((row) => ({
+    id: row.id,
+    startup: row.startup,
+    responsavelStartup: row.responsavel_startup,
+    area: row.area_mentoria,
+    mentor: row.mentor,
+    dataSolicitacao: row.data_solicitacao,
+    status: row.status,
+    dataAgendamento: row.data_agendamento,
+    dataMentoria: row.data_mentoria,
+    relatorioRecebido: row.relatorio_recebido,
+    pagamentoMentor: row.pagamento_mentor,
+    observacoes: row.observacoes,
+  }))
+}
+
+export function countMentoriasByArea(list) {
   const counts = {}
   for (const mentoria of list) {
     counts[mentoria.area] = (counts[mentoria.area] ?? 0) + 1
@@ -110,7 +35,7 @@ export function countMentoriasByArea(list = mentorias) {
   }))
 }
 
-export function countMentoriasByStartup(list = mentorias) {
+export function countMentoriasByStartup(list) {
   const counts = {}
   for (const mentoria of list) {
     counts[mentoria.startup] = (counts[mentoria.startup] ?? 0) + 1
@@ -136,7 +61,7 @@ const MESES = [
   'Dez',
 ]
 
-export function countMentoriasPorMes(list = mentorias) {
+export function countMentoriasPorMes(list) {
   const counts = {}
   for (const mentoria of list) {
     const mesNumero = Number(mentoria.dataMentoria?.split('/')[1])
@@ -150,7 +75,7 @@ export function countMentoriasPorMes(list = mentorias) {
   }))
 }
 
-export function countMentoriasByMentor(list = mentorias) {
+export function countMentoriasByMentor(list) {
   const counts = {}
   for (const mentoria of list) {
     counts[mentoria.mentor] = (counts[mentoria.mentor] ?? 0) + 1
