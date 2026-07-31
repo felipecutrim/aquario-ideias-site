@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { createMentoria } from '../data/mentorias'
+import { isRequired, isValidEmail, isValidPhone } from '../lib/validators'
 
 const initialForm = {
   nomeStartup: '',
@@ -15,8 +17,18 @@ const initialForm = {
 const inputStyles =
   'w-full rounded-md border border-secondary-light bg-white px-4 py-2 text-sm text-neutral-700 focus:border-accent-blue focus:outline-none'
 
+function formatDataSolicitacao() {
+  const hoje = new Date()
+  const dia = String(hoje.getDate()).padStart(2, '0')
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
+  return `${dia}/${mes}`
+}
+
 export default function SolicitarMentoria() {
   const [form, setForm] = useState(initialForm)
+  const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [enviado, setEnviado] = useState(false)
 
   function handleChange(field) {
@@ -25,10 +37,72 @@ export default function SolicitarMentoria() {
     }
   }
 
-  function handleSubmit(event) {
+  function validate() {
+    const nextErrors = {}
+    if (!isRequired(form.nomeStartup)) {
+      nextErrors.nomeStartup = 'Nome da startup é obrigatório.'
+    }
+    if (!isRequired(form.nomeResponsavel)) {
+      nextErrors.nomeResponsavel = 'Nome do responsável é obrigatório.'
+    }
+    if (!isRequired(form.whatsappResponsavel)) {
+      nextErrors.whatsappResponsavel = 'WhatsApp do responsável é obrigatório.'
+    } else if (!isValidPhone(form.whatsappResponsavel)) {
+      nextErrors.whatsappResponsavel = 'Informe um WhatsApp válido, com DDD.'
+    }
+    if (!isRequired(form.emailResponsavel)) {
+      nextErrors.emailResponsavel = 'E-mail do responsável é obrigatório.'
+    } else if (!isValidEmail(form.emailResponsavel)) {
+      nextErrors.emailResponsavel =
+        'Informe um e-mail válido (ex.: nome@dominio.com).'
+    }
+    if (!isRequired(form.temaMentoria)) {
+      nextErrors.temaMentoria = 'Tema da mentoria é obrigatório.'
+    }
+    if (!isRequired(form.necessidade)) {
+      nextErrors.necessidade = 'Conte um pouco sobre a necessidade da startup.'
+    }
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault()
-    setEnviado(true)
-    setForm(initialForm)
+    if (!validate()) return
+
+    setSubmitting(true)
+    setSubmitError('')
+
+    const observacoes = [
+      `WhatsApp: ${form.whatsappResponsavel}`,
+      `E-mail: ${form.emailResponsavel}`,
+      `Preferência de horário: ${form.preferenciaHorario}`,
+      `Urgência: ${form.urgencia}`,
+      `Necessidade: ${form.necessidade}`,
+    ].join(' | ')
+
+    try {
+      await createMentoria({
+        startup: form.nomeStartup,
+        responsavelStartup: form.nomeResponsavel,
+        area: form.temaMentoria,
+        mentor: '',
+        dataSolicitacao: formatDataSolicitacao(),
+        status: 'Agendada',
+        dataAgendamento: '',
+        dataMentoria: '',
+        relatorioRecebido: '',
+        pagamentoMentor: '',
+        observacoes,
+      })
+      setEnviado(true)
+      setForm(initialForm)
+      setErrors({})
+    } catch (err) {
+      setSubmitError(err.message ?? 'Erro ao enviar solicitação. Tente novamente.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -55,8 +129,15 @@ export default function SolicitarMentoria() {
         </div>
       )}
 
+      {submitError && (
+        <div className="mt-6 rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {submitError}
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="mt-6 space-y-5 rounded-xl border border-secondary-light bg-white p-6"
       >
         <div>
@@ -65,11 +146,13 @@ export default function SolicitarMentoria() {
           </label>
           <input
             type="text"
-            required
             value={form.nomeStartup}
             onChange={handleChange('nomeStartup')}
             className={inputStyles}
           />
+          {errors.nomeStartup && (
+            <p className="mt-1 text-xs text-red-600">{errors.nomeStartup}</p>
+          )}
         </div>
 
         <div>
@@ -92,11 +175,15 @@ export default function SolicitarMentoria() {
           </label>
           <input
             type="text"
-            required
             value={form.nomeResponsavel}
             onChange={handleChange('nomeResponsavel')}
             className={inputStyles}
           />
+          {errors.nomeResponsavel && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.nomeResponsavel}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -106,12 +193,16 @@ export default function SolicitarMentoria() {
             </label>
             <input
               type="tel"
-              required
               placeholder="(00) 00000-0000"
               value={form.whatsappResponsavel}
               onChange={handleChange('whatsappResponsavel')}
               className={inputStyles}
             />
+            {errors.whatsappResponsavel && (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.whatsappResponsavel}
+              </p>
+            )}
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700">
@@ -119,11 +210,15 @@ export default function SolicitarMentoria() {
             </label>
             <input
               type="email"
-              required
               value={form.emailResponsavel}
               onChange={handleChange('emailResponsavel')}
               className={inputStyles}
             />
+            {errors.emailResponsavel && (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.emailResponsavel}
+              </p>
+            )}
           </div>
         </div>
 
@@ -133,11 +228,13 @@ export default function SolicitarMentoria() {
           </label>
           <input
             type="text"
-            required
             value={form.temaMentoria}
             onChange={handleChange('temaMentoria')}
             className={inputStyles}
           />
+          {errors.temaMentoria && (
+            <p className="mt-1 text-xs text-red-600">{errors.temaMentoria}</p>
+          )}
         </div>
 
         <div>
@@ -145,12 +242,14 @@ export default function SolicitarMentoria() {
             Necessidade da startup
           </label>
           <textarea
-            required
             rows={4}
             value={form.necessidade}
             onChange={handleChange('necessidade')}
             className={inputStyles}
           />
+          {errors.necessidade && (
+            <p className="mt-1 text-xs text-red-600">{errors.necessidade}</p>
+          )}
         </div>
 
         <div>
@@ -170,9 +269,10 @@ export default function SolicitarMentoria() {
 
         <button
           type="submit"
-          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark"
+          disabled={submitting}
+          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark disabled:opacity-60"
         >
-          Enviar solicitação
+          {submitting ? 'Enviando...' : 'Enviar solicitação'}
         </button>
       </form>
     </section>

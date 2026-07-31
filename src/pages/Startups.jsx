@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react'
-import { fetchStartups } from '../data/startups'
+import {
+  fetchStartups,
+  createStartup,
+  updateStartup,
+  deleteStartup,
+} from '../data/startups'
 import { useSupabaseData } from '../hooks/useSupabaseData'
 import DataStatus from '../components/DataStatus'
+import Modal from '../components/Modal'
+import ConfirmDialog from '../components/ConfirmDialog'
+import StartupForm from '../components/forms/StartupForm'
 
 const badgeStyles = {
   Feita: 'bg-secondary-light text-primary',
@@ -32,13 +40,17 @@ function display(value) {
 }
 
 export default function Startups() {
-  const { data, error, loading } = useSupabaseData(fetchStartups)
+  const { data, error, loading, refetch } = useSupabaseData(fetchStartups)
   const startups = data ?? []
 
   const [search, setSearch] = useState('')
   const [srl, setSrl] = useState('')
   const [categoria, setCategoria] = useState('')
   const [setor, setSetor] = useState('')
+
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingStartup, setEditingStartup] = useState(null)
+  const [deletingStartup, setDeletingStartup] = useState(null)
 
   const srlOptions = useMemo(() => uniqueValues(startups, 'srl'), [startups])
   const categoriaOptions = useMemo(
@@ -61,12 +73,54 @@ export default function Startups() {
     })
   }, [startups, search, srl, categoria, setor])
 
+  function openAddForm() {
+    setEditingStartup(null)
+    setFormOpen(true)
+  }
+
+  function openEditForm(startup) {
+    setEditingStartup(startup)
+    setFormOpen(true)
+  }
+
+  function closeForm() {
+    setFormOpen(false)
+    setEditingStartup(null)
+  }
+
+  async function handleFormSubmit(values) {
+    if (editingStartup) {
+      await updateStartup(editingStartup.id, values)
+    } else {
+      await createStartup(values)
+    }
+    closeForm()
+    await refetch()
+  }
+
+  async function confirmDelete() {
+    await deleteStartup(deletingStartup.id)
+    setDeletingStartup(null)
+    await refetch()
+  }
+
   return (
     <section>
-      <h1 className="text-3xl font-bold text-primary">Startups</h1>
-      <p className="mt-2 text-neutral-600">
-        Empresas incubadas atualmente no Aquário de Ideias.
-      </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-primary">Startups</h1>
+          <p className="mt-2 text-neutral-600">
+            Empresas incubadas atualmente no Aquário de Ideias.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={openAddForm}
+          className="w-fit shrink-0 rounded-md bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-blue/90"
+        >
+          Adicionar Startup
+        </button>
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <input
@@ -138,11 +192,12 @@ export default function Startups() {
                   <th className="px-4 py-3 font-semibold">WhatsApp</th>
                   <th className="px-4 py-3 font-semibold">Diagnóstico</th>
                   <th className="px-4 py-3 font-semibold">Plano de Ação</th>
+                  <th className="px-4 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
                 {filtered.map((startup) => (
-                  <tr key={startup.nome}>
+                  <tr key={startup.id}>
                     <td className="px-4 py-3 font-medium text-neutral-900">
                       {startup.nome}
                     </td>
@@ -173,6 +228,24 @@ export default function Startups() {
                     <td className="px-4 py-3">
                       <Badge value={startup.planoAcao} />
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEditForm(startup)}
+                          className="rounded-md px-2 py-1 text-xs font-medium text-accent-blue hover:bg-accent-blue/10"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingStartup(startup)}
+                          className="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -182,7 +255,7 @@ export default function Startups() {
           <div className="mt-6 space-y-3 md:hidden">
             {filtered.map((startup) => (
               <div
-                key={startup.nome}
+                key={startup.id}
                 className="space-y-2 rounded-xl border border-secondary-light bg-white p-4 shadow-sm"
               >
                 <p className="font-semibold text-neutral-900">
@@ -238,11 +311,47 @@ export default function Startups() {
                   </span>
                   <Badge value={startup.planoAcao} />
                 </p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => openEditForm(startup)}
+                    className="rounded-md border border-secondary-light px-3 py-1.5 text-xs font-medium text-accent-blue hover:bg-accent-blue/10"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeletingStartup(startup)}
+                    className="rounded-md border border-secondary-light px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                  >
+                    Excluir
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </>
       )}
+
+      <Modal
+        open={formOpen}
+        onClose={closeForm}
+        title={editingStartup ? 'Editar Startup' : 'Adicionar Startup'}
+      >
+        <StartupForm
+          initialValues={editingStartup}
+          onSubmit={handleFormSubmit}
+          onCancel={closeForm}
+        />
+      </Modal>
+
+      <ConfirmDialog
+        open={Boolean(deletingStartup)}
+        title="Excluir startup"
+        message={`Tem certeza que deseja excluir "${deletingStartup?.nome}"? Essa ação não pode ser desfeita.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeletingStartup(null)}
+      />
     </section>
   )
 }

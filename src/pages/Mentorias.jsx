@@ -1,7 +1,16 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchMentorias } from '../data/mentorias'
+import {
+  fetchMentorias,
+  createMentoria,
+  updateMentoria,
+  deleteMentoria,
+} from '../data/mentorias'
 import { useSupabaseData } from '../hooks/useSupabaseData'
 import DataStatus from '../components/DataStatus'
+import Modal from '../components/Modal'
+import ConfirmDialog from '../components/ConfirmDialog'
+import MentoriaForm from '../components/forms/MentoriaForm'
 
 const statusStyles = {
   Agendada: 'bg-accent-blue/10 text-accent-blue',
@@ -23,8 +32,43 @@ function StatusBadge({ status }) {
 }
 
 export default function Mentorias() {
-  const { data, error, loading } = useSupabaseData(fetchMentorias)
+  const { data, error, loading, refetch } = useSupabaseData(fetchMentorias)
   const mentorias = data ?? []
+
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingMentoria, setEditingMentoria] = useState(null)
+  const [deletingMentoria, setDeletingMentoria] = useState(null)
+
+  function openAddForm() {
+    setEditingMentoria(null)
+    setFormOpen(true)
+  }
+
+  function openEditForm(mentoria) {
+    setEditingMentoria(mentoria)
+    setFormOpen(true)
+  }
+
+  function closeForm() {
+    setFormOpen(false)
+    setEditingMentoria(null)
+  }
+
+  async function handleFormSubmit(values) {
+    if (editingMentoria) {
+      await updateMentoria(editingMentoria.id, values)
+    } else {
+      await createMentoria(values)
+    }
+    closeForm()
+    await refetch()
+  }
+
+  async function confirmDelete() {
+    await deleteMentoria(deletingMentoria.id)
+    setDeletingMentoria(null)
+    await refetch()
+  }
 
   return (
     <section>
@@ -35,12 +79,21 @@ export default function Mentorias() {
             Sessões de mentoria agendadas e realizadas.
           </p>
         </div>
-        <Link
-          to="/mentorias/solicitar"
-          className="w-fit rounded-md bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-blue/90"
-        >
-          Solicitar mentoria
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            to="/mentorias/solicitar"
+            className="w-fit rounded-md bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-blue/90"
+          >
+            Solicitar mentoria
+          </Link>
+          <button
+            type="button"
+            onClick={openAddForm}
+            className="w-fit rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary-light"
+          >
+            Adicionar Mentoria
+          </button>
+        </div>
       </div>
 
       <DataStatus loading={loading} error={error} />
@@ -73,6 +126,7 @@ export default function Mentorias() {
                     Pagamento do Mentor
                   </th>
                   <th className="px-4 py-3 font-semibold">Observações</th>
+                  <th className="px-4 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
@@ -113,6 +167,24 @@ export default function Mentorias() {
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {display(sessao.observacoes)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEditForm(sessao)}
+                          className="rounded-md px-2 py-1 text-xs font-medium text-accent-blue hover:bg-accent-blue/10"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingMentoria(sessao)}
+                          className="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                        >
+                          Excluir
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -189,11 +261,47 @@ export default function Mentorias() {
                   </span>
                   {display(sessao.observacoes)}
                 </p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => openEditForm(sessao)}
+                    className="rounded-md border border-secondary-light px-3 py-1.5 text-xs font-medium text-accent-blue hover:bg-accent-blue/10"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeletingMentoria(sessao)}
+                    className="rounded-md border border-secondary-light px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                  >
+                    Excluir
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </>
       )}
+
+      <Modal
+        open={formOpen}
+        onClose={closeForm}
+        title={editingMentoria ? 'Editar Mentoria' : 'Adicionar Mentoria'}
+      >
+        <MentoriaForm
+          initialValues={editingMentoria}
+          onSubmit={handleFormSubmit}
+          onCancel={closeForm}
+        />
+      </Modal>
+
+      <ConfirmDialog
+        open={Boolean(deletingMentoria)}
+        title="Excluir mentoria"
+        message={`Tem certeza que deseja excluir a mentoria de "${deletingMentoria?.startup}"? Essa ação não pode ser desfeita.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeletingMentoria(null)}
+      />
     </section>
   )
 }

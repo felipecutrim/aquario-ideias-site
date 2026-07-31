@@ -1,14 +1,7 @@
 import { supabase } from '../lib/supabaseClient'
 
-export async function fetchMentorias() {
-  const { data, error } = await supabase
-    .from('mentorias')
-    .select('*')
-    .order('id')
-
-  if (error) throw error
-
-  return data.map((row) => ({
+function mapRowToMentoria(row) {
+  return {
     id: row.id,
     startup: row.startup,
     responsavelStartup: row.responsavel_startup,
@@ -21,7 +14,62 @@ export async function fetchMentorias() {
     relatorioRecebido: row.relatorio_recebido,
     pagamentoMentor: row.pagamento_mentor,
     observacoes: row.observacoes,
-  }))
+  }
+}
+
+function mapMentoriaToRow(mentoria) {
+  return {
+    startup: mentoria.startup,
+    responsavel_startup: mentoria.responsavelStartup,
+    area_mentoria: mentoria.area,
+    mentor: mentoria.mentor,
+    data_solicitacao: mentoria.dataSolicitacao,
+    status: mentoria.status,
+    data_agendamento: mentoria.dataAgendamento,
+    data_mentoria: mentoria.dataMentoria,
+    relatorio_recebido: mentoria.relatorioRecebido,
+    pagamento_mentor: mentoria.pagamentoMentor,
+    observacoes: mentoria.observacoes,
+  }
+}
+
+export async function fetchMentorias() {
+  const { data, error } = await supabase
+    .from('mentorias')
+    .select('*')
+    .order('id')
+
+  if (error) throw error
+
+  return data.map(mapRowToMentoria)
+}
+
+export async function createMentoria(mentoria) {
+  const { data, error } = await supabase
+    .from('mentorias')
+    .insert([mapMentoriaToRow(mentoria)])
+    .select()
+    .single()
+
+  if (error) throw error
+  return mapRowToMentoria(data)
+}
+
+export async function updateMentoria(id, mentoria) {
+  const { data, error } = await supabase
+    .from('mentorias')
+    .update(mapMentoriaToRow(mentoria))
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return mapRowToMentoria(data)
+}
+
+export async function deleteMentoria(id) {
+  const { error } = await supabase.from('mentorias').delete().eq('id', id)
+  if (error) throw error
 }
 
 export function countMentoriasByArea(list) {

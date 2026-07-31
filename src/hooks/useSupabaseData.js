@@ -1,32 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export function useSupabaseData(fetcher) {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const isMountedRef = useRef(true)
 
-  useEffect(() => {
-    let isMounted = true
-
+  const load = useCallback(() => {
     setLoading(true)
     setError(null)
 
-    fetcher()
+    return fetcher()
       .then((result) => {
-        if (isMounted) setData(result)
+        if (isMountedRef.current) setData(result)
       })
       .catch((err) => {
-        if (isMounted) setError(err)
+        if (isMountedRef.current) setError(err)
       })
       .finally(() => {
-        if (isMounted) setLoading(false)
+        if (isMountedRef.current) setLoading(false)
       })
-
-    return () => {
-      isMounted = false
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { data, error, loading }
+  useEffect(() => {
+    isMountedRef.current = true
+    load()
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [load])
+
+  return { data, error, loading, refetch: load }
 }
