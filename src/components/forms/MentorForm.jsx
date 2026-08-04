@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import FormField, { inputStyles } from '../FormField'
-import { isRequired } from '../../lib/validators'
+import { isRequired, isValidEmail, isValidPhone } from '../../lib/validators'
 
 const emptyForm = {
   nome: '',
   modalidade: 'Remunerado',
   area: '',
+  email: '',
+  whatsapp: '',
+  chavePix: '',
+  miniBiografia: '',
 }
 
 export default function MentorForm({ initialValues, onSubmit, onCancel }) {
@@ -24,6 +28,12 @@ export default function MentorForm({ initialValues, onSubmit, onCancel }) {
     const nextErrors = {}
     if (!isRequired(form.nome)) {
       nextErrors.nome = 'Nome é obrigatório.'
+    }
+    if (!isValidEmail(form.email)) {
+      nextErrors.email = 'Informe um e-mail válido (ex.: nome@dominio.com).'
+    }
+    if (!isValidPhone(form.whatsapp)) {
+      nextErrors.whatsapp = 'Informe um WhatsApp válido, com DDD.'
     }
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
@@ -78,6 +88,44 @@ export default function MentorForm({ initialValues, onSubmit, onCancel }) {
           placeholder="Ex.: Marketing e Vendas, Modelo de Negócios"
           value={form.area}
           onChange={handleChange('area')}
+          className={inputStyles}
+        />
+      </FormField>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormField label="Email" error={errors.email}>
+          <input
+            type="email"
+            value={form.email}
+            onChange={handleChange('email')}
+            className={inputStyles}
+          />
+        </FormField>
+        <FormField label="WhatsApp" error={errors.whatsapp}>
+          <input
+            type="tel"
+            placeholder="(00) 00000-0000"
+            value={form.whatsapp}
+            onChange={handleChange('whatsapp')}
+            className={inputStyles}
+          />
+        </FormField>
+      </div>
+
+      <FormField label="Chave Pix">
+        <input
+          type="text"
+          value={form.chavePix}
+          onChange={handleChange('chavePix')}
+          className={inputStyles}
+        />
+      </FormField>
+
+      <FormField label="Mini Biografia">
+        <textarea
+          rows={4}
+          value={form.miniBiografia}
+          onChange={handleChange('miniBiografia')}
           className={inputStyles}
         />
       </FormField>

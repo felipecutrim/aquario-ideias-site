@@ -13,6 +13,7 @@ function mapRowToStartup(row) {
     whatsapp: row.whatsapp,
     diagnostico: row.diagnostico,
     planoAcao: row.plano_acao,
+    agendamentoMentoria: row.agendamento_mentoria,
   }
 }
 
@@ -28,6 +29,7 @@ function mapStartupToRow(startup) {
     whatsapp: startup.whatsapp,
     diagnostico: startup.diagnostico,
     plano_acao: startup.planoAcao,
+    agendamento_mentoria: startup.agendamentoMentoria,
   }
 }
 

@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import FormField, { inputStyles } from '../FormField'
-import { isRequired } from '../../lib/validators'
+import { isRequired, isValidEmail, isValidPhone } from '../../lib/validators'
 
 const emptyForm = {
   startup: '',
   responsavelStartup: '',
+  whatsappResponsavel: '',
+  emailResponsavel: '',
   area: '',
   mentor: '',
-  dataSolicitacao: '',
+  preferenciaHorario: '',
+  urgencia: '',
   status: 'Agendada',
-  dataAgendamento: '',
+  dataSolicitacao: '',
   dataMentoria: '',
   relatorioRecebido: '',
-  pagamentoMentor: '',
   observacoes: '',
 }
 
@@ -32,6 +34,13 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
     const nextErrors = {}
     if (!isRequired(form.startup)) {
       nextErrors.startup = 'Startup é obrigatória.'
+    }
+    if (!isValidEmail(form.emailResponsavel)) {
+      nextErrors.emailResponsavel =
+        'Informe um e-mail válido (ex.: nome@dominio.com).'
+    }
+    if (!isValidPhone(form.whatsappResponsavel)) {
+      nextErrors.whatsappResponsavel = 'Informe um WhatsApp válido, com DDD.'
     }
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
@@ -60,6 +69,13 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
         </p>
       )}
 
+      {form.dataSolicitacao && (
+        <p className="text-xs text-neutral-500">
+          Data da Solicitação: {form.dataSolicitacao} (preenchida
+          automaticamente)
+        </p>
+      )}
+
       <FormField label="Startup" required error={errors.startup}>
         <input
           type="text"
@@ -69,15 +85,36 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
         />
       </FormField>
 
+      <FormField label="Responsável da Startup">
+        <input
+          type="text"
+          value={form.responsavelStartup}
+          onChange={handleChange('responsavelStartup')}
+          className={inputStyles}
+        />
+      </FormField>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Responsável da Startup">
+        <FormField label="WhatsApp do responsável" error={errors.whatsappResponsavel}>
           <input
-            type="text"
-            value={form.responsavelStartup}
-            onChange={handleChange('responsavelStartup')}
+            type="tel"
+            placeholder="(00) 00000-0000"
+            value={form.whatsappResponsavel}
+            onChange={handleChange('whatsappResponsavel')}
             className={inputStyles}
           />
         </FormField>
+        <FormField label="Email do responsável" error={errors.emailResponsavel}>
+          <input
+            type="email"
+            value={form.emailResponsavel}
+            onChange={handleChange('emailResponsavel')}
+            className={inputStyles}
+          />
+        </FormField>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Área da Mentoria">
           <input
             type="text"
@@ -86,9 +123,6 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
             className={inputStyles}
           />
         </FormField>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Mentor">
           <input
             type="text"
@@ -96,6 +130,33 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
             onChange={handleChange('mentor')}
             className={inputStyles}
           />
+        </FormField>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <FormField label="Preferência de horário">
+          <select
+            value={form.preferenciaHorario}
+            onChange={handleChange('preferenciaHorario')}
+            className={inputStyles}
+          >
+            <option value="">—</option>
+            <option value="Manhã">Manhã</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Noite">Noite</option>
+          </select>
+        </FormField>
+        <FormField label="Urgência">
+          <select
+            value={form.urgencia}
+            onChange={handleChange('urgencia')}
+            className={inputStyles}
+          >
+            <option value="">—</option>
+            <option value="Alta">Alta prioridade</option>
+            <option value="Média">Média prioridade</option>
+            <option value="Baixa">Baixa prioridade</option>
+          </select>
         </FormField>
         <FormField label="Status">
           <select
@@ -109,50 +170,20 @@ export default function MentoriaForm({ initialValues, onSubmit, onCancel }) {
         </FormField>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <FormField label="Data da Solicitação">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormField label="Data e hora da Mentoria">
           <input
-            type="text"
-            placeholder="dd/mm"
-            value={form.dataSolicitacao}
-            onChange={handleChange('dataSolicitacao')}
-            className={inputStyles}
-          />
-        </FormField>
-        <FormField label="Data do Agendamento">
-          <input
-            type="text"
-            placeholder="dd/mm"
-            value={form.dataAgendamento}
-            onChange={handleChange('dataAgendamento')}
-            className={inputStyles}
-          />
-        </FormField>
-        <FormField label="Data da Mentoria">
-          <input
-            type="text"
-            placeholder="dd/mm"
+            type="datetime-local"
             value={form.dataMentoria}
             onChange={handleChange('dataMentoria')}
             className={inputStyles}
           />
         </FormField>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Relatório Recebido">
           <input
             type="text"
             value={form.relatorioRecebido}
             onChange={handleChange('relatorioRecebido')}
-            className={inputStyles}
-          />
-        </FormField>
-        <FormField label="Pagamento do Mentor">
-          <input
-            type="text"
-            value={form.pagamentoMentor}
-            onChange={handleChange('pagamentoMentor')}
             className={inputStyles}
           />
         </FormField>

@@ -13,6 +13,7 @@ const emptyForm = {
   whatsapp: '',
   diagnostico: '—',
   planoAcao: '—',
+  agendamentoMentoria: '—',
 }
 
 export default function StartupForm({ initialValues, onSubmit, onCancel }) {
@@ -172,6 +173,19 @@ export default function StartupForm({ initialValues, onSubmit, onCancel }) {
           </select>
         </FormField>
       </div>
+
+      <FormField label="Agendamento de Mentoria">
+        <select
+          value={form.agendamentoMentoria}
+          onChange={handleChange('agendamentoMentoria')}
+          className={inputStyles}
+        >
+          <option value="—">—</option>
+          <option value="Agendada">Agendada</option>
+          <option value="PDF entregue">PDF entregue</option>
+          <option value="Feita">Feita</option>
+        </select>
+      </FormField>
 
       <div className="flex justify-end gap-3 pt-2">
         <button

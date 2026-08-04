@@ -6,6 +6,10 @@ function mapRowToMentor(row) {
     nome: row.nome,
     modalidade: row.modalidade,
     area: row.areas_especialidade,
+    email: row.email,
+    whatsapp: row.whatsapp,
+    chavePix: row.chave_pix,
+    miniBiografia: row.mini_biografia,
   }
 }
 
@@ -14,6 +18,10 @@ function mapMentorToRow(mentor) {
     nome: mentor.nome,
     modalidade: mentor.modalidade,
     areas_especialidade: mentor.area,
+    email: mentor.email,
+    whatsapp: mentor.whatsapp,
+    chave_pix: mentor.chavePix,
+    mini_biografia: mentor.miniBiografia,
   }
 }
 

@@ -17,13 +17,6 @@ const initialForm = {
 const inputStyles =
   'w-full rounded-md border border-secondary-light bg-white px-4 py-2 text-sm text-neutral-700 focus:border-accent-blue focus:outline-none'
 
-function formatDataSolicitacao() {
-  const hoje = new Date()
-  const dia = String(hoje.getDate()).padStart(2, '0')
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
-  return `${dia}/${mes}`
-}
-
 export default function SolicitarMentoria() {
   const [form, setForm] = useState(initialForm)
   const [errors, setErrors] = useState({})
@@ -73,27 +66,21 @@ export default function SolicitarMentoria() {
     setSubmitting(true)
     setSubmitError('')
 
-    const observacoes = [
-      `WhatsApp: ${form.whatsappResponsavel}`,
-      `E-mail: ${form.emailResponsavel}`,
-      `Preferência de horário: ${form.preferenciaHorario}`,
-      `Urgência: ${form.urgencia}`,
-      `Necessidade: ${form.necessidade}`,
-    ].join(' | ')
-
     try {
       await createMentoria({
         startup: form.nomeStartup,
         responsavelStartup: form.nomeResponsavel,
+        whatsappResponsavel: form.whatsappResponsavel,
+        emailResponsavel: form.emailResponsavel,
         area: form.temaMentoria,
         mentor: '',
-        dataSolicitacao: formatDataSolicitacao(),
+        preferenciaHorario: form.preferenciaHorario,
+        urgencia: form.urgencia,
         status: 'Agendada',
-        dataAgendamento: '',
+        dataSolicitacao: '',
         dataMentoria: '',
         relatorioRecebido: '',
-        pagamentoMentor: '',
-        observacoes,
+        observacoes: form.necessidade,
       })
       setEnviado(true)
       setForm(initialForm)
@@ -157,20 +144,6 @@ export default function SolicitarMentoria() {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-neutral-700">
-            Preferência de horário
-          </label>
-          <select
-            value={form.preferenciaHorario}
-            onChange={handleChange('preferenciaHorario')}
-            className={inputStyles}
-          >
-            <option value="Manhã">Manhã</option>
-            <option value="Tarde">Tarde</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-neutral-700">
             Nome do responsável
           </label>
           <input
@@ -189,7 +162,7 @@ export default function SolicitarMentoria() {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700">
-              WhatsApp do responsável
+              WhatsApp
             </label>
             <input
               type="tel"
@@ -206,7 +179,7 @@ export default function SolicitarMentoria() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700">
-              E-mail do responsável
+              Email
             </label>
             <input
               type="email"
@@ -239,7 +212,7 @@ export default function SolicitarMentoria() {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-neutral-700">
-            Necessidade da startup
+            Observações / Necessidade da startup
           </label>
           <textarea
             rows={4}
@@ -252,19 +225,35 @@ export default function SolicitarMentoria() {
           )}
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-neutral-700">
-            Urgência
-          </label>
-          <select
-            value={form.urgencia}
-            onChange={handleChange('urgencia')}
-            className={inputStyles}
-          >
-            <option value="Alta">Alta prioridade</option>
-            <option value="Média">Média prioridade</option>
-            <option value="Baixa">Baixa prioridade</option>
-          </select>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-neutral-700">
+              Urgência
+            </label>
+            <select
+              value={form.urgencia}
+              onChange={handleChange('urgencia')}
+              className={inputStyles}
+            >
+              <option value="Alta">Alta prioridade</option>
+              <option value="Média">Média prioridade</option>
+              <option value="Baixa">Baixa prioridade</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-neutral-700">
+              Preferência de horário
+            </label>
+            <select
+              value={form.preferenciaHorario}
+              onChange={handleChange('preferenciaHorario')}
+              className={inputStyles}
+            >
+              <option value="Manhã">Manhã</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noite">Noite</option>
+            </select>
+          </div>
         </div>
 
         <button

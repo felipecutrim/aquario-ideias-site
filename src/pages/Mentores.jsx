@@ -80,11 +80,25 @@ export default function Mentores() {
           {mentores.map((mentor) => (
             <li
               key={mentor.id}
-              className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-start sm:justify-between"
             >
               <div>
                 <p className="font-semibold text-neutral-900">{mentor.nome}</p>
                 <p className="text-sm text-neutral-500">{mentor.area}</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  {mentor.email && <span>Email: {mentor.email}</span>}
+                  {mentor.email && mentor.whatsapp && <span> · </span>}
+                  {mentor.whatsapp && <span>WhatsApp: {mentor.whatsapp}</span>}
+                  {(mentor.email || mentor.whatsapp) && mentor.chavePix && (
+                    <span> · </span>
+                  )}
+                  {mentor.chavePix && <span>Pix: {mentor.chavePix}</span>}
+                </p>
+                {mentor.miniBiografia && (
+                  <p className="mt-2 max-w-2xl text-sm text-neutral-600">
+                    {mentor.miniBiografia}
+                  </p>
+                )}
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span

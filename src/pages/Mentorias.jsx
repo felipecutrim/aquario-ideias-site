@@ -17,8 +17,22 @@ const statusStyles = {
   Concluída: 'bg-secondary-light text-primary',
 }
 
+const urgenciaStyles = {
+  Alta: 'bg-red-50 text-red-600',
+  Média: 'bg-accent-blue/10 text-accent-blue',
+  Baixa: 'bg-secondary-light text-primary',
+}
+
 function display(value) {
   return value || '—'
+}
+
+function formatDataMentoria(value) {
+  if (!value) return '—'
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
+  if (!match) return value
+  const [, ano, mes, dia, hora, minuto] = match
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`
 }
 
 function StatusBadge({ status }) {
@@ -27,6 +41,17 @@ function StatusBadge({ status }) {
       className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[status]}`}
     >
       {status}
+    </span>
+  )
+}
+
+function UrgenciaBadge({ urgencia }) {
+  if (!urgencia) return <span className="text-neutral-400">—</span>
+  return (
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-medium ${urgenciaStyles[urgencia] ?? 'bg-neutral-100 text-neutral-500'}`}
+    >
+      {urgencia}
     </span>
   )
 }
@@ -109,21 +134,21 @@ export default function Mentorias() {
                   <th className="px-4 py-3 font-semibold">
                     Responsável da Startup
                   </th>
+                  <th className="px-4 py-3 font-semibold">WhatsApp</th>
+                  <th className="px-4 py-3 font-semibold">Email</th>
                   <th className="px-4 py-3 font-semibold">Área da Mentoria</th>
                   <th className="px-4 py-3 font-semibold">Mentor</th>
+                  <th className="px-4 py-3 font-semibold">
+                    Preferência de Horário
+                  </th>
+                  <th className="px-4 py-3 font-semibold">Urgência</th>
                   <th className="px-4 py-3 font-semibold">
                     Data da Solicitação
                   </th>
                   <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">
-                    Data do Agendamento
-                  </th>
                   <th className="px-4 py-3 font-semibold">Data da Mentoria</th>
                   <th className="px-4 py-3 font-semibold">
                     Relatório Recebido
-                  </th>
-                  <th className="px-4 py-3 font-semibold">
-                    Pagamento do Mentor
                   </th>
                   <th className="px-4 py-3 font-semibold">Observações</th>
                   <th className="px-4 py-3 font-semibold">Ações</th>
@@ -142,10 +167,22 @@ export default function Mentorias() {
                       {sessao.responsavelStartup}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
+                      {display(sessao.whatsappResponsavel)}
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600">
+                      {display(sessao.emailResponsavel)}
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600">
                       {sessao.area}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {sessao.mentor}
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600">
+                      {display(sessao.preferenciaHorario)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <UrgenciaBadge urgencia={sessao.urgencia} />
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {display(sessao.dataSolicitacao)}
@@ -154,16 +191,10 @@ export default function Mentorias() {
                       <StatusBadge status={sessao.status} />
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
-                      {display(sessao.dataAgendamento)}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {display(sessao.dataMentoria)}
+                      {formatDataMentoria(sessao.dataMentoria)}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {display(sessao.relatorioRecebido)}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {display(sessao.pagamentoMentor)}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {display(sessao.observacoes)}
@@ -209,6 +240,18 @@ export default function Mentorias() {
                 </p>
                 <p className="text-sm text-neutral-600">
                   <span className="font-medium text-neutral-500">
+                    WhatsApp:{' '}
+                  </span>
+                  {display(sessao.whatsappResponsavel)}
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
+                    Email:{' '}
+                  </span>
+                  {display(sessao.emailResponsavel)}
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
                     Área da Mentoria:{' '}
                   </span>
                   {sessao.area}
@@ -218,6 +261,18 @@ export default function Mentorias() {
                     Mentor:{' '}
                   </span>
                   {sessao.mentor}
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
+                    Preferência de Horário:{' '}
+                  </span>
+                  {display(sessao.preferenciaHorario)}
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
+                    Urgência:{' '}
+                  </span>
+                  <UrgenciaBadge urgencia={sessao.urgencia} />
                 </p>
                 <p className="text-sm text-neutral-600">
                   <span className="font-medium text-neutral-500">
@@ -233,27 +288,15 @@ export default function Mentorias() {
                 </p>
                 <p className="text-sm text-neutral-600">
                   <span className="font-medium text-neutral-500">
-                    Data do Agendamento:{' '}
-                  </span>
-                  {display(sessao.dataAgendamento)}
-                </p>
-                <p className="text-sm text-neutral-600">
-                  <span className="font-medium text-neutral-500">
                     Data da Mentoria:{' '}
                   </span>
-                  {display(sessao.dataMentoria)}
+                  {formatDataMentoria(sessao.dataMentoria)}
                 </p>
                 <p className="text-sm text-neutral-600">
                   <span className="font-medium text-neutral-500">
                     Relatório Recebido:{' '}
                   </span>
                   {display(sessao.relatorioRecebido)}
-                </p>
-                <p className="text-sm text-neutral-600">
-                  <span className="font-medium text-neutral-500">
-                    Pagamento do Mentor:{' '}
-                  </span>
-                  {display(sessao.pagamentoMentor)}
                 </p>
                 <p className="text-sm text-neutral-600">
                   <span className="font-medium text-neutral-500">

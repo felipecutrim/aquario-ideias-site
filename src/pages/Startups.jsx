@@ -14,6 +14,7 @@ import StartupForm from '../components/forms/StartupForm'
 const badgeStyles = {
   Feita: 'bg-secondary-light text-primary',
   'PDF entregue': 'bg-accent-blue/10 text-accent-blue',
+  Agendada: 'bg-accent-blue/10 text-accent-blue',
   '—': 'bg-neutral-100 text-neutral-400',
 }
 
@@ -192,6 +193,9 @@ export default function Startups() {
                   <th className="px-4 py-3 font-semibold">WhatsApp</th>
                   <th className="px-4 py-3 font-semibold">Diagnóstico</th>
                   <th className="px-4 py-3 font-semibold">Plano de Ação</th>
+                  <th className="px-4 py-3 font-semibold">
+                    Agendamento de Mentoria
+                  </th>
                   <th className="px-4 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
@@ -227,6 +231,9 @@ export default function Startups() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge value={startup.planoAcao} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge value={startup.agendamentoMentoria} />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
@@ -310,6 +317,12 @@ export default function Startups() {
                     Plano de Ação:{' '}
                   </span>
                   <Badge value={startup.planoAcao} />
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
+                    Agendamento de Mentoria:{' '}
+                  </span>
+                  <Badge value={startup.agendamentoMentoria} />
                 </p>
                 <div className="flex gap-2 pt-1">
                   <button
