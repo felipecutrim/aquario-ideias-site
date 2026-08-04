@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FormField, { inputStyles } from '../FormField'
 import { isRequired, isValidEmail, isValidPhone } from '../../lib/validators'
+import { uploadContrato } from '../../data/startups'
 
 const emptyForm = {
   nome: '',
@@ -14,10 +15,12 @@ const emptyForm = {
   diagnostico: '—',
   planoAcao: '—',
   agendamentoMentoria: '—',
+  contratoUrl: '',
 }
 
 export default function StartupForm({ initialValues, onSubmit, onCancel }) {
   const [form, setForm] = useState(initialValues ?? emptyForm)
+  const [contratoFile, setContratoFile] = useState(null)
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -26,6 +29,17 @@ export default function StartupForm({ initialValues, onSubmit, onCancel }) {
     return (event) => {
       setForm((prev) => ({ ...prev, [field]: event.target.value }))
     }
+  }
+
+  function handleContratoChange(event) {
+    const file = event.target.files?.[0] ?? null
+    if (file && file.type !== 'application/pdf') {
+      setErrors((prev) => ({ ...prev, contrato: 'O contrato precisa ser um arquivo PDF.' }))
+      setContratoFile(null)
+      return
+    }
+    setErrors((prev) => ({ ...prev, contrato: undefined }))
+    setContratoFile(file)
   }
 
   function validate() {
@@ -50,7 +64,11 @@ export default function StartupForm({ initialValues, onSubmit, onCancel }) {
     setSubmitting(true)
     setSubmitError('')
     try {
-      await onSubmit(form)
+      let contratoUrl = form.contratoUrl
+      if (contratoFile) {
+        contratoUrl = await uploadContrato(contratoFile)
+      }
+      await onSubmit({ ...form, contratoUrl })
     } catch (err) {
       setSubmitError(err.message ?? 'Erro ao salvar. Tente novamente.')
     } finally {
@@ -86,6 +104,7 @@ export default function StartupForm({ initialValues, onSubmit, onCancel }) {
             <option value="Ideação">Ideação</option>
             <option value="Validação">Validação</option>
             <option value="Operação">Operação</option>
+            <option value="Escala">Escala</option>
           </select>
         </FormField>
         <FormField label="Modalidade">
@@ -185,6 +204,29 @@ export default function StartupForm({ initialValues, onSubmit, onCancel }) {
           <option value="PDF entregue">PDF entregue</option>
           <option value="Feita">Feita</option>
         </select>
+      </FormField>
+
+      <FormField label="Contrato (PDF)" error={errors.contrato}>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleContratoChange}
+          className={inputStyles}
+        />
+        {form.contratoUrl && !contratoFile && (
+          <p className="mt-1 text-xs text-neutral-500">
+            Contrato atual:{' '}
+            <a
+              href={form.contratoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent-blue underline"
+            >
+              abrir PDF
+            </a>{' '}
+            (escolha um novo arquivo acima para substituir)
+          </p>
+        )}
       </FormField>
 
       <div className="flex justify-end gap-3 pt-2">

@@ -84,16 +84,20 @@ export default function Mentores() {
             >
               <div>
                 <p className="font-semibold text-neutral-900">{mentor.nome}</p>
-                <p className="text-sm text-neutral-500">{mentor.area}</p>
-                <p className="mt-1 text-xs text-neutral-500">
-                  {mentor.email && <span>Email: {mentor.email}</span>}
-                  {mentor.email && mentor.whatsapp && <span> · </span>}
-                  {mentor.whatsapp && <span>WhatsApp: {mentor.whatsapp}</span>}
-                  {(mentor.email || mentor.whatsapp) && mentor.chavePix && (
-                    <span> · </span>
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-neutral-700">{mentor.area}</p>
+                  {mentor.email && (
+                    <p className="text-neutral-700">Email: {mentor.email}</p>
                   )}
-                  {mentor.chavePix && <span>Pix: {mentor.chavePix}</span>}
-                </p>
+                  {mentor.whatsapp && (
+                    <p className="text-neutral-700">
+                      WhatsApp: {mentor.whatsapp}
+                    </p>
+                  )}
+                  {mentor.chavePix && (
+                    <p className="text-neutral-700">Pix: {mentor.chavePix}</p>
+                  )}
+                </div>
                 {mentor.miniBiografia && (
                   <p className="mt-2 max-w-2xl text-sm text-neutral-600">
                     {mentor.miniBiografia}

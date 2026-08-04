@@ -126,38 +126,54 @@ export default function Mentorias() {
       {!loading && !error && (
         <>
           <div className="mt-8 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
-            <table className="w-full table-fixed text-left text-sm">
+            <table className="w-full text-left text-sm">
               <thead className="bg-secondary-light text-primary">
                 <tr>
-                  <th className="w-[3%] px-4 py-3 font-semibold">ID</th>
-                  <th className="w-[9%] px-4 py-3 font-semibold">Startup</th>
-                  <th className="w-[8%] px-4 py-3 font-semibold">
+                  <th className="min-w-[50px] px-4 py-3 font-semibold">
+                    ID
+                  </th>
+                  <th className="min-w-[140px] px-4 py-3 font-semibold">
+                    Startup
+                  </th>
+                  <th className="min-w-[140px] px-4 py-3 font-semibold">
                     Responsável da Startup
                   </th>
-                  <th className="w-[6%] px-4 py-3 font-semibold">WhatsApp</th>
-                  <th className="w-[8%] px-4 py-3 font-semibold">Email</th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[130px] px-4 py-3 font-semibold">
+                    WhatsApp
+                  </th>
+                  <th className="min-w-[190px] px-4 py-3 font-semibold">
+                    Email
+                  </th>
+                  <th className="min-w-[130px] px-4 py-3 font-semibold">
                     Área da Mentoria
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">Mentor</th>
-                  <th className="w-[6%] px-4 py-3 font-semibold">
+                  <th className="min-w-[130px] px-4 py-3 font-semibold">
+                    Mentor
+                  </th>
+                  <th className="min-w-[110px] px-4 py-3 font-semibold">
                     Preferência de Horário
                   </th>
-                  <th className="w-[5%] px-4 py-3 font-semibold">Urgência</th>
-                  <th className="w-[6%] px-4 py-3 font-semibold">
+                  <th className="min-w-[100px] px-4 py-3 font-semibold">
+                    Urgência
+                  </th>
+                  <th className="min-w-[140px] px-4 py-3 font-semibold">
                     Data da Solicitação
                   </th>
-                  <th className="w-[5%] px-4 py-3 font-semibold">Status</th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[100px] px-4 py-3 font-semibold">
+                    Status
+                  </th>
+                  <th className="min-w-[150px] px-4 py-3 font-semibold">
                     Data da Mentoria
                   </th>
-                  <th className="w-[5%] px-4 py-3 font-semibold">
+                  <th className="min-w-[110px] px-4 py-3 font-semibold">
                     Relatório Recebido
                   </th>
-                  <th className="w-[11%] px-4 py-3 font-semibold">
+                  <th className="min-w-[200px] px-4 py-3 font-semibold">
                     Observações
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">Ações</th>
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">

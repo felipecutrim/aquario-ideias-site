@@ -151,13 +151,3 @@ export function countMentoriasPorMes(list) {
     quantidade: counts[mes],
   }))
 }
-
-export function countMentoriasByMentor(list) {
-  const counts = {}
-  for (const mentoria of list) {
-    counts[mentoria.mentor] = (counts[mentoria.mentor] ?? 0) + 1
-  }
-  return Object.entries(counts)
-    .map(([mentor, quantidade]) => ({ mentor, quantidade }))
-    .sort((a, b) => b.quantidade - a.quantidade)
-}

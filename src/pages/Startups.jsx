@@ -181,31 +181,48 @@ export default function Startups() {
       {!loading && !error && filtered.length > 0 && (
         <>
           <div className="mt-6 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
-            <table className="w-full table-fixed text-left text-sm">
+            <table className="w-full text-left text-sm">
               <thead className="bg-secondary-light text-primary">
                 <tr>
-                  <th className="w-[12%] px-4 py-3 font-semibold">Nome</th>
-                  <th className="w-[6%] px-4 py-3 font-semibold">SRL</th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[160px] px-4 py-3 font-semibold">
+                    Nome
+                  </th>
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
+                    SRL
+                  </th>
+                  <th className="min-w-[100px] px-4 py-3 font-semibold">
                     Modalidade
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
                     Categoria
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">Setor</th>
-                  <th className="w-[12%] px-4 py-3 font-semibold">CEO</th>
-                  <th className="w-[12%] px-4 py-3 font-semibold">Email</th>
-                  <th className="w-[8%] px-4 py-3 font-semibold">WhatsApp</th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
+                    Setor
+                  </th>
+                  <th className="min-w-[160px] px-4 py-3 font-semibold">
+                    CEO
+                  </th>
+                  <th className="min-w-[180px] px-4 py-3 font-semibold">
+                    Email
+                  </th>
+                  <th className="min-w-[120px] px-4 py-3 font-semibold">
+                    WhatsApp
+                  </th>
+                  <th className="min-w-[110px] px-4 py-3 font-semibold">
                     Diagnóstico
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">
+                  <th className="min-w-[110px] px-4 py-3 font-semibold">
                     Plano de Ação
                   </th>
-                  <th className="w-[8%] px-4 py-3 font-semibold">
+                  <th className="min-w-[130px] px-4 py-3 font-semibold">
                     Agendamento de Mentoria
                   </th>
-                  <th className="w-[7%] px-4 py-3 font-semibold">Ações</th>
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
+                    Contrato
+                  </th>
+                  <th className="min-w-[90px] px-4 py-3 font-semibold">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
@@ -243,6 +260,20 @@ export default function Startups() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge value={startup.agendamentoMentoria} />
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600">
+                      {startup.contratoUrl ? (
+                        <a
+                          href={startup.contratoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-accent-blue hover:underline"
+                        >
+                          Ver PDF
+                        </a>
+                      ) : (
+                        '—'
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col items-start gap-1">
@@ -332,6 +363,23 @@ export default function Startups() {
                     Agendamento de Mentoria:{' '}
                   </span>
                   <Badge value={startup.agendamentoMentoria} />
+                </p>
+                <p className="text-sm text-neutral-600">
+                  <span className="font-medium text-neutral-500">
+                    Contrato:{' '}
+                  </span>
+                  {startup.contratoUrl ? (
+                    <a
+                      href={startup.contratoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-accent-blue hover:underline"
+                    >
+                      Ver PDF
+                    </a>
+                  ) : (
+                    '—'
+                  )}
                 </p>
                 <div className="flex gap-2 pt-1">
                   <button
