@@ -26,18 +26,19 @@ function uniqueValues(startups, key) {
   ).sort()
 }
 
-function Badge({ value }) {
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-medium ${badgeStyles[value]}`}
-    >
-      {value}
-    </span>
-  )
-}
-
 function display(value) {
   return value || '—'
+}
+
+function Badge({ value }) {
+  const label = display(value)
+  return (
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-medium ${badgeStyles[label] ?? 'bg-neutral-100 text-neutral-400'}`}
+    >
+      {label}
+    </span>
+  )
 }
 
 export default function Startups() {
@@ -180,29 +181,37 @@ export default function Startups() {
       {!loading && !error && filtered.length > 0 && (
         <>
           <div className="mt-6 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
-            <table className="w-full text-left text-sm">
+            <table className="w-full table-fixed text-left text-sm">
               <thead className="bg-secondary-light text-primary">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Nome</th>
-                  <th className="px-4 py-3 font-semibold">SRL</th>
-                  <th className="px-4 py-3 font-semibold">Modalidade</th>
-                  <th className="px-4 py-3 font-semibold">Categoria</th>
-                  <th className="px-4 py-3 font-semibold">Setor</th>
-                  <th className="px-4 py-3 font-semibold">CEO</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">WhatsApp</th>
-                  <th className="px-4 py-3 font-semibold">Diagnóstico</th>
-                  <th className="px-4 py-3 font-semibold">Plano de Ação</th>
-                  <th className="px-4 py-3 font-semibold">
+                  <th className="w-[12%] px-4 py-3 font-semibold">Nome</th>
+                  <th className="w-[6%] px-4 py-3 font-semibold">SRL</th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Modalidade
+                  </th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Categoria
+                  </th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">Setor</th>
+                  <th className="w-[12%] px-4 py-3 font-semibold">CEO</th>
+                  <th className="w-[12%] px-4 py-3 font-semibold">Email</th>
+                  <th className="w-[8%] px-4 py-3 font-semibold">WhatsApp</th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Diagnóstico
+                  </th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Plano de Ação
+                  </th>
+                  <th className="w-[8%] px-4 py-3 font-semibold">
                     Agendamento de Mentoria
                   </th>
-                  <th className="px-4 py-3 font-semibold">Ações</th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
                 {filtered.map((startup) => (
                   <tr key={startup.id}>
-                    <td className="px-4 py-3 font-medium text-neutral-900">
+                    <td className="break-words px-4 py-3 font-medium text-neutral-900">
                       {startup.nome}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
@@ -217,10 +226,10 @@ export default function Startups() {
                     <td className="px-4 py-3 text-neutral-600">
                       {startup.setor}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {startup.ceo}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {display(startup.email)}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
@@ -236,7 +245,7 @@ export default function Startups() {
                       <Badge value={startup.agendamentoMentoria} />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2">
+                      <div className="flex flex-col items-start gap-1">
                         <button
                           type="button"
                           onClick={() => openEditForm(startup)}

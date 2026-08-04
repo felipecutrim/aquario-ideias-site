@@ -126,32 +126,38 @@ export default function Mentorias() {
       {!loading && !error && (
         <>
           <div className="mt-8 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
-            <table className="w-full text-left text-sm">
+            <table className="w-full table-fixed text-left text-sm">
               <thead className="bg-secondary-light text-primary">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">ID</th>
-                  <th className="px-4 py-3 font-semibold">Startup</th>
-                  <th className="px-4 py-3 font-semibold">
+                  <th className="w-[3%] px-4 py-3 font-semibold">ID</th>
+                  <th className="w-[9%] px-4 py-3 font-semibold">Startup</th>
+                  <th className="w-[8%] px-4 py-3 font-semibold">
                     Responsável da Startup
                   </th>
-                  <th className="px-4 py-3 font-semibold">WhatsApp</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Área da Mentoria</th>
-                  <th className="px-4 py-3 font-semibold">Mentor</th>
-                  <th className="px-4 py-3 font-semibold">
+                  <th className="w-[6%] px-4 py-3 font-semibold">WhatsApp</th>
+                  <th className="w-[8%] px-4 py-3 font-semibold">Email</th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Área da Mentoria
+                  </th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">Mentor</th>
+                  <th className="w-[6%] px-4 py-3 font-semibold">
                     Preferência de Horário
                   </th>
-                  <th className="px-4 py-3 font-semibold">Urgência</th>
-                  <th className="px-4 py-3 font-semibold">
+                  <th className="w-[5%] px-4 py-3 font-semibold">Urgência</th>
+                  <th className="w-[6%] px-4 py-3 font-semibold">
                     Data da Solicitação
                   </th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Data da Mentoria</th>
-                  <th className="px-4 py-3 font-semibold">
+                  <th className="w-[5%] px-4 py-3 font-semibold">Status</th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">
+                    Data da Mentoria
+                  </th>
+                  <th className="w-[5%] px-4 py-3 font-semibold">
                     Relatório Recebido
                   </th>
-                  <th className="px-4 py-3 font-semibold">Observações</th>
-                  <th className="px-4 py-3 font-semibold">Ações</th>
+                  <th className="w-[11%] px-4 py-3 font-semibold">
+                    Observações
+                  </th>
+                  <th className="w-[7%] px-4 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
@@ -160,16 +166,16 @@ export default function Mentorias() {
                     <td className="px-4 py-3 font-medium text-neutral-900">
                       {sessao.id}
                     </td>
-                    <td className="px-4 py-3 font-medium text-neutral-900">
+                    <td className="break-words px-4 py-3 font-medium text-neutral-900">
                       {sessao.startup}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {sessao.responsavelStartup}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {display(sessao.whatsappResponsavel)}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {display(sessao.emailResponsavel)}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
@@ -196,11 +202,11 @@ export default function Mentorias() {
                     <td className="px-4 py-3 text-neutral-600">
                       {display(sessao.relatorioRecebido)}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="break-words px-4 py-3 text-neutral-600">
                       {display(sessao.observacoes)}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2">
+                      <div className="flex flex-col items-start gap-1">
                         <button
                           type="button"
                           onClick={() => openEditForm(sessao)}

@@ -93,15 +93,21 @@ export default function Capacitacoes() {
       {!loading && !error && (
         <>
           <div className="mt-8 hidden overflow-x-auto rounded-xl border border-secondary-light bg-white md:block">
-            <table className="w-full text-left text-sm">
+            <table className="w-full table-fixed text-left text-sm">
               <thead className="bg-secondary-light text-primary">
                 <tr>
-                  <th className="px-6 py-3 font-semibold">SRL/Trilha</th>
-                  <th className="px-6 py-3 font-semibold">Tema</th>
-                  <th className="px-6 py-3 font-semibold">Palestrante</th>
-                  <th className="px-6 py-3 font-semibold">Data</th>
-                  <th className="px-6 py-3 font-semibold">Horário</th>
-                  <th className="px-6 py-3 font-semibold">Ações</th>
+                  <th className="w-[16%] px-6 py-3 font-semibold">
+                    SRL/Trilha
+                  </th>
+                  <th className="w-[30%] px-6 py-3 font-semibold">Tema</th>
+                  <th className="w-[20%] px-6 py-3 font-semibold">
+                    Palestrante
+                  </th>
+                  <th className="w-[12%] px-6 py-3 font-semibold">Data</th>
+                  <th className="w-[12%] px-6 py-3 font-semibold">
+                    Horário
+                  </th>
+                  <th className="w-[10%] px-6 py-3 font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-secondary-light">
@@ -110,10 +116,10 @@ export default function Capacitacoes() {
                     <td className="px-6 py-4">
                       <TrilhaBadge trilha={evento.trilha} />
                     </td>
-                    <td className="px-6 py-4 font-medium text-neutral-900">
+                    <td className="break-words px-6 py-4 font-medium text-neutral-900">
                       {evento.tema}
                     </td>
-                    <td className="px-6 py-4 text-neutral-600">
+                    <td className="break-words px-6 py-4 text-neutral-600">
                       {display(evento.palestrante)}
                     </td>
                     <td className="px-6 py-4 text-neutral-600">
@@ -123,7 +129,7 @@ export default function Capacitacoes() {
                       {display(evento.horario)}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2">
+                      <div className="flex flex-col items-start gap-1">
                         <button
                           type="button"
                           onClick={() => openEditForm(evento)}
