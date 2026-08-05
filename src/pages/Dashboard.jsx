@@ -3,11 +3,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
-  Legend,
   LabelList,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -26,8 +22,7 @@ import {
   countMentoriasPorMes,
 } from '../data/mentorias'
 import DataStatus from '../components/DataStatus'
-
-const DONUT_COLORS = ['#14532d', '#2563eb', '#22c55e', '#60a5fa', '#86efac', '#1d4ed8']
+import DonutChart from '../components/DonutChart'
 
 const chartCardClassName =
   'rounded-xl border border-secondary-light bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-lg'
@@ -146,34 +141,14 @@ function DashboardContent({ startups, mentores, mentorias }) {
           <h2 className="text-lg font-semibold text-primary">
             Startups por categoria
           </h2>
-          <div className="mt-4 h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={startupsByCategoria}
-                  dataKey="quantidade"
-                  nameKey="categoria"
-                  innerRadius="55%"
-                  outerRadius="80%"
-                  paddingAngle={2}
-                >
-                  {startupsByCategoria.map((entry, index) => (
-                    <Cell
-                      key={entry.categoria}
-                      fill={DONUT_COLORS[index % DONUT_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ borderRadius: 8, borderColor: '#e4f3ea' }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  wrapperStyle={{ fontSize: 12 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="mt-4">
+            <DonutChart
+              data={startupsByCategoria}
+              nameKey="categoria"
+              valueKey="quantidade"
+              total={startups.length}
+              totalLabel="startups"
+            />
           </div>
         </div>
 
