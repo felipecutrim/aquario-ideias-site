@@ -37,8 +37,17 @@ function mapStartupToRow(startup) {
 
 const CONTRATOS_BUCKET = 'contratos'
 
+// O Supabase Storage rejeita chaves com espaços, acentos ou outros
+// caracteres especiais ("Invalid key"). O nome original do arquivo
+// não é usado como chave — só para exibição, se algum dia for exibido.
+function sanitizeFileName(fileName) {
+  const diacriticos = new RegExp('[̀-ͯ]', 'g')
+  const semAcentos = fileName.normalize('NFD').replace(diacriticos, '')
+  return semAcentos.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '')
+}
+
 export async function uploadContrato(file) {
-  const path = `${Date.now()}-${file.name}`
+  const path = `${Date.now()}-${sanitizeFileName(file.name)}`
   const { error: uploadError } = await supabase.storage
     .from(CONTRATOS_BUCKET)
     .upload(path, file)
